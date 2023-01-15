@@ -1,8 +1,8 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizer = require('css-minimizer-webpack-plugin');
-// const ImageMinimizerPlugin = require("image-minimizer-webpack-plugin");
+const ESLintPlugin = require('eslint-webpack-plugin');
 
 const NODE_ENV = process.env.NODE_ENV;
 const IS_DEV = NODE_ENV === 'development';
@@ -18,14 +18,14 @@ function setupDevtool() {
 const optimization = () => {
     const configObj = {};
 
-  if (IS_PROD) {
-    configObj.minimizer = [
-      new CssMinimizer(),
-    ];
-  }
-  return configObj;
+    if (IS_PROD) {
+        configObj.minimizer = [
+            new CssMinimizer(),
+        ];
+    }
+    return configObj;
 
-}
+};
 
 module.exports = {
     resolve: {
@@ -54,13 +54,15 @@ module.exports = {
             template: path.resolve(__dirname, 'src/index.html'),
             filename: 'index.html',
             minify: {
-            collapseWhitespace: IS_PROD,
-    },
+                collapseWhitespace: IS_PROD,
+            },
         }),
 
         new MiniCssExtractPlugin({
             filename: filename('css')
         }),
+
+        new ESLintPlugin(),
     ],
 
     module: {
@@ -68,7 +70,7 @@ module.exports = {
             {
                 test: /\.html$/i,
                 loader: 'html-loader',
-            },        
+            },
         
             {
                 test: /\.s[ac]ss$/i,
@@ -99,30 +101,30 @@ module.exports = {
             {
                 test: /\.(jpe?g|png|webp|gif|svg)$/i,
                 use: IS_DEV
-                ? []
-                : [
-                    {
-                        loader: 'image-webpack-loader',
-                        options: {
-                            mozjpeg: {
-                                progressive: true,
-                            },
-                            optipng: {
-                                enabled: false,
-                            },
-                            pngquant: {
-                                quality: [0.65, 0.9],
-                                speed: 4,
-                            },
-                            gifsicle: {
-                                interlaced: false,
-                            },
-                            webp: {
-                                quality: 75,
+                    ? []
+                    : [
+                        {
+                            loader: 'image-webpack-loader',
+                            options: {
+                                mozjpeg: {
+                                    progressive: true,
+                                },
+                                optipng: {
+                                    enabled: false,
+                                },
+                                pngquant: {
+                                    quality: [0.65, 0.9],
+                                    speed: 4,
+                                },
+                                gifsicle: {
+                                    interlaced: false,
+                                },
+                                webp: {
+                                    quality: 75,
+                                },
                             },
                         },
-                    },
-                ],
+                    ],
                 type: 'asset/resource',
                 generator: {
                     filename: 'images/[name][ext]'
@@ -132,11 +134,11 @@ module.exports = {
             {
                 test: /\.(woff|woff2)$/i,
                 type: 'asset/resource',
-                 generator: {
+                generator: {
                     filename: 'fonts/[name][ext]'
                 }
             },
         ]
     }
 
-}
+};
